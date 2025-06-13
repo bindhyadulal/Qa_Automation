@@ -3,15 +3,15 @@ import os
 from pages.inventory_page import InventoryPage
 from pages.cart_page import CartPage
 from pages.checkout_page import CheckoutPage
-
+import pytest
 def load_test_data(filename):
     base_path = os.path.dirname(os.path.abspath(__file__))
     data_path = os.path.join(base_path, '..', 'TestData', filename)
     with open(data_path, 'r') as f:
         return json.load(f)
-
+pytest_mark = [pytest.mark.checkout]
 class TestCheckoutPage:
-
+    @pytest.mark.smoke
     def test_checkout_form_submission(self, inventory: InventoryPage, cart: CartPage, checkout: CheckoutPage):
         test_data = load_test_data('checkout_data.json')
 
@@ -28,6 +28,7 @@ class TestCheckoutPage:
 
         assert "checkout-step-two.html" in checkout.get_current_url()
 
+    @pytest.mark.regression
     def test_cancel_checkout_goes_back_to_cart(self, inventory: InventoryPage, cart: CartPage, checkout: CheckoutPage):
         test_data = load_test_data('checkout_data.json')
 
@@ -40,6 +41,7 @@ class TestCheckoutPage:
         # After cancel, should navigate back to cart page
         assert "cart.html" in checkout.get_current_url()
 
+    @pytest.mark.smoke
     def test_finish_checkout_redirects_to_complete(self, inventory: InventoryPage, cart: CartPage, checkout: CheckoutPage):
         test_data = load_test_data('checkout_data.json')
 
