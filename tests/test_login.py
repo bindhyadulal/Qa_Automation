@@ -1,4 +1,13 @@
+import json
+import os
+import pytest
 from pages.login_page import LoginPage
+
+def load_valid_login_data():
+    base_path = os.path.dirname(os.path.abspath(__file__))
+    data_path = os.path.join(base_path, '..', 'TestData', 'valid_login_data.json')
+    with open(data_path, 'r') as f:
+        return [(entry["username"], entry["password"]) for entry in json.load(f)]
 
 class TestLoginPage:
 
@@ -45,3 +54,11 @@ class TestLoginPage:
         login = LoginPage(driver)
         login.load()
         assert login.get_login_button_text() == "Login"
+
+    @pytest.mark.smoke
+    @pytest.mark.parametrize("username,password", load_valid_login_data())
+    def test_valid_login(self, driver, username, password):
+        login = LoginPage(driver)
+        login.load()
+        login.login(username, password)
+        assert "inventory.html" in driver.current_url
